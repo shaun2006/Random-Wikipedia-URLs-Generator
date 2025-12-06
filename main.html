@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Random Wikipedia URLs Generator</title>
+</head>
+<body>
+    <h1>Random <i>Wikipedia</i> URLs Generator</h1>
+
+    <ol id="List"></ol>
+
+    <script>
+        // Fetch 5 random Wikipedia pages
+        function fetchRandomPages() {
+            let url = "https://en.wikipedia.org/w/api.php";
+            const params = {
+                action: "query",
+                format: "json",
+                list: "random",
+                rnlimit: "500"
+            };
+
+            url += "?origin=*";
+            Object.keys(params).forEach(function (key) {
+                url += "&" + key + "=" + params[key];
+            });
+
+            fetch(url)
+                .then((response) => response.json())
+                .then((response) => {
+                    const randoms = response.query.random;
+                    const list = document.getElementById("List");
+                    list.innerHTML = ""; // Clear existing items
+
+                    randoms.forEach((page) => {
+                        const listItem = document.createElement("li");
+                        const link = document.createElement("a");
+                        link.href = `https://en.wikipedia.org/wiki/${encodeURIComponent(page.title)}`;
+                        link.target = "_blank";
+                        link.textContent = page.title;
+                        listItem.appendChild(link);
+                        list.appendChild(listItem);
+                    });
+                })
+                .catch((error) => console.log(error));
+        }
+
+        // Load random pages when the page loads
+        window.onload = fetchRandomPages;
+    </script>
+</body>
+</html>
